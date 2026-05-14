@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .header { background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        h2 { margin: 0; color: #333; }
+        .logout-btn { background: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 4px; text-decoration: none; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; border-left: 5px solid #007bff; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        .btn { background: #007bff; color: white; padding: 12px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; width: 100%; }
+        .btn:hover { background: #0056b3; }
+        .job-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; border-left: 5px solid #ffc107; }
+        .status-open { color: #28a745; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>🏢 Welcome, <%= name %>!</h2>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+
+    <!-- POST A NEW JOB FORM -->
+    <div class="card">
+        <h3 style="margin-top:0;">Post a New Job</h3>
+        <form action="/employer/post-job" method="POST">
+            <div class="form-group">
+                <label>Job Title</label>
+                <input type="text" name="title" required placeholder="e.g., Need 2 painters for 2BHK flat">
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Skill Required</label>
+                    <select name="skill_required" required>
+                        <option value="" disabled selected>Select Skill</option>
+                        <% skills.forEach(function(skill) { %>
+                            <option value="<%= skill.id %>"><%= skill.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Pincode</label>
+                    <input type="text" name="pincode" required placeholder="e.g., 110021" pattern="[0-9]{6}">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Wage per Day (₹)</label>
+                    <input type="number" name="wage_per_day" required placeholder="e.g., 600">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Workers Needed</label>
+                    <input type="number" name="workers_needed" required value="1" min="1">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Job Date</label>
+                <input type="date" name="job_date" required>
+            </div>
+
+            <div class="form-group">
+                <label>Description (Optional)</label>
+                <textarea name="description" rows="3" placeholder="Any extra details..."></textarea>
+            </div>
+
+            <button type="submit" class="btn">Post Job</button>
+        </form>
+    </div>
+
+    <!-- LIST OF MY POSTED JOBS & APPLICANTS -->
+    <h3>My Posted Jobs & Applicants</h3>
+    <% const applicationsList = applications || []; %>
+    <% if (!myJobs || myJobs.length === 0) { %>
+        <p style="color:#777;">You haven't posted any jobs yet.</p>
+    <% } else { %>
+        <% myJobs.forEach(function(job) { %>
+            <div class="job-card">
+                <h4 style="margin:0 0 10px 0;"><%= job.title %> <span style="font-size:14px; color:#28a745;">(<%= job.skill_name %>)</span></h4>
+                <div style="display:flex; gap:15px; font-size:14px; color:#555; margin-bottom:15px;">
+                    <span>📍 <%= job.pincode %></span>
+                    <span>📅 <%= job.job_date %></span>
+                    <span>👥 <%= job.workers_needed %></span>
+                    <span class="status-open">₹ <%= job.wage_per_day %>/day</span>
+                </div>
+                
+                <!-- NEW: Show Applicants for this job -->
+                <div style="background:#f8f9fa; padding:10px; border-radius:5px;">
+                    <strong style="font-size:14px; color:#333;">Applicants:</strong>
+                    <%
+                        // Filter applicants for THIS specific job
+                        const jobApplicants = applicationsList.filter(app => app.job_id === job.id);
+                        if (jobApplicants.length === 0) { 
+                    %>
+                        <p style="font-size:13px; color:#888; margin:5px 0 0 0;">No applicants yet.</p>
+                    <% } else { %>
+                        <ul style="margin:5px 0 0 0; padding-left:20px; font-size:14px;">
+                            <% jobApplicants.forEach(function(app) { %>
+                                <li style="margin-bottom:5px;">
+                                    <%= app.worker_name %> (<%= app.worker_phone %>)
+                                    <% if(app.status === 'pending') { %>
+                                        <span style="color:orange; font-size:12px;"> - Pending</span>
+                                    <% } else if(app.status === 'accepted') { %>
+                                        <span style="color:green; font-size:12px;"> - Accepted ✓</span>
+                                    <% } else { %>
+                                        <span style="color:red; font-size:12px;"> - Rejected ✗</span>
+                                    <% } %>
+                                </li>
+                            <% }) %>
+                        </ul>
+                    <% } %>
+                </div>
+            </div>
+        <% }) %>
+    <% } %>
+
+</body>
+</html>

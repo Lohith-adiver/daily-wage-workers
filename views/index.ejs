@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; text-align: center; padding-top: 100px; }
+        .btn { background-color: #28a745; color: white; padding: 15px 30px; font-size: 18px; border: none; border-radius: 5px; cursor: pointer; margin: 10px; text-decoration: none; display: inline-block; }
+        .btn:hover { background-color: #218838; }
+        .btn-employer { background-color: #007bff; }
+        .btn-employer:hover { background-color: #0056b3; }
+        h1 { color: #333; }
+        .login-link { margin-top: 30px; }
+        .login-link a { color: #555; text-decoration: none; font-size: 16px; border-bottom: 1px solid #ccc; }
+        .login-link a:hover { color: #000; }
+    </style>
+</head>
+<body>
+
+    <h1>🛠️ Daily Wage Worker Portal</h1>
+    <p>Find work or find workers easily.</p>
+
+    <div>
+        <!-- THESE ARE THE CORRECT LINKS NOW -->
+        <a href="/register?role=worker" class="btn">I am a Worker</a>
+        <a href="/register?role=employer" class="btn btn-employer">I am an Employer</a>
+    </div>
+
+    <div class="login-link">
+        <p>Already have an account? <a href="/login">Login here</a></p>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .header { background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        h2 { margin: 0; color: #333; }
+        .logout-btn { background: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 4px; text-decoration: none; }
+        .job-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; border-left: 5px solid #28a745; }
+        .job-title { font-size: 20px; margin: 0 0 10px 0; color: #333; }
+        .job-details { display: flex; gap: 20px; color: #555; font-size: 14px; margin-bottom: 15px; }
+        .wage { font-weight: bold; color: #28a745; font-size: 18px; }
+        .apply-btn { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        .apply-btn:hover { background: #0056b3; }
+        .no-jobs { text-align: center; color: #777; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>👋 Welcome, <%= name %>!</h2>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+
+    <h3 style="color:#333;">Available Jobs</h3>
+
+    <% if (!jobs || jobs.length === 0) { %>
+        <div class="no-jobs">
+            <p>No jobs available right now. Check back later!</p>
+        </div>
+    <% } else { %>
+        
+        <% jobs.forEach(function(job) { %>
+            <div class="job-card">
+                <h3 class="job-title"><%= job.title %></h3>
+                <div class="job-details">
+                    <span>🔧 Skill: <strong><%= job.skill_name %></strong></span>
+                    <span>📍 Pincode: <strong><%= job.pincode %></strong></span>
+                    <span>📅 Date: <strong><%= job.job_date %></strong></span>
+                    <span>👥 Workers Needed: <strong><%= job.workers_needed %></strong></span>
+                </div>
+                <p style="color:#666;"><%= job.description %></p>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                    <span class="wage">₹<%= job.wage_per_day %> / day</span>
+                    <!-- We will make this button work in the next step! -->
+                    <form action="/apply/<%= job.id %>" method="POST" style="margin:0;">
+    <button type="submit" class="apply-btn">Apply Now</button>
+</form>
+                </div>
+            </div>
+        <% }) %>
+
+    <% } %>
+
+</body>
+</html>
